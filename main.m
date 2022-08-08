@@ -9,73 +9,54 @@ err_xyz=[];
 
 while(w <= 4)
     if (w==1)
-    input0=load("data/test715/SingleAxis1DataUsingTracker.txt");%在这里修改文件名称
+    input0=load("data/20220808/SingleAxis1DataUsingTracker.txt");%在这里修改文件名称
+    j_limited = -15: 3: 15;
     end 
     if (w==2)
-    input0=load("data/test715/SingleAxis2DataUsingTracker.txt");%在这里修改文件名称
+    input0=load("data/20220808/SingleAxis2DataUsingTracker.txt");%在这里修改文件名称
+    j_limited = -40:8:40;
     end
     if (w==3)
-    input0=load("data/test715/SingleAxis3DataUsingTracker.txt");%在这里修改文件名称
+    input0=load("data/20220808/SingleAxis3DataUsingTracker.txt");%在这里修改文件名称
+    j_limited = -20:4:20;
     end
     if (w==4)
-    input0=load("data/test715/SingleAxis4DataUsingTracker.txt");%在这里修改文件名称
+    input0=load("data/20220808/SingleAxis4DataUsingTracker.txt");%在这里修改文件名称
+    j_limited = -10:2:10;
     end
 
     
 
 input0(1,:) = [];
-% a=sortrows(input0);
+a=sortrows(input0);
 
-
-times=2;%点重复次数
-count=(size(input0,1))/times;%采样点总数
-n=times*(times-1)/2;%重复组数
-
-input=zeros(count,size(input0,2),times);
-
-for i=1:times
-    input(:,:,i)=input0((i-1)*count+1:i*count,:);
-end
-
-input = input*1000;
-
-
-count0=0;
-for i=1:times-1
-    temp0=input(:,:,i);
-    for j=i+1:times
-        temp1=input(:,:,j);
-        count0=count0+1;
-        temp=temp0-temp1;
-        err_xyz(:,(count0-1)*3+1:count0*3,w)=temp(:,6:8);
+% tabulate(a(:,1))
+% times=30;%点重复次数
+n=1;
+temp=[];
+count = 0;
+err_xyz = [];
+err_points = [];
+a_temp = [];
+for i=j_limited
+    count_pre = count+1;
+    count = count_pre+sum(a(:,1)==i)-1;
+    a_temp = a(count_pre:count,:);
+    for j=1:size(a_temp,1)
+        for k=j+1:size(a_temp,1)
+            err_xyz(n,:)=a_temp(j,6:8)-a_temp(k,6:8);
+            err_points(n,:) = 1000*norm(err_xyz(n,:));
+            n = n+1;
+        end
     end
+    
 end
+max(err_points)
 
-
-
-for i=1:count
-    for j=1:n
-        err_points(i,j,w)=vpa(norm(err_xyz(i,3*(j-1)+1:3*j,w)),10);
-    end
-end
-% 
-err_point_max(w,:) =max(err_points(:,:,w));
-% 
-w
 w=w+1;
-
-fprintf("one round finished\n")
 end
 
 
 
 
 
-
-
-
-
-
-w = [1 2 3 4];
-result = cat(1,w,err_point_max.');
-fprintf("the repeat error of the %d Axis is %4.4f \n",result);
