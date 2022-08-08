@@ -1,0 +1,76 @@
+clear
+clc
+close all
+w=1;
+err_points=[];
+err_point_max=zeros(4,1);
+err_xyz=[];
+
+
+while(w <= 4)
+    if (w==1)
+    input0=load("data/20220808/SingleAxis1DataUsingTracker.txt");%在这里修改文件名称
+    j_limited = -15: 3: 15;
+    end 
+    if (w==2)
+    input0=load("data/20220808/SingleAxis2DataUsingTracker.txt");%在这里修改文件名称
+    j_limited = -40:8:40;
+    end
+    if (w==3)
+    input0=load("data/20220808/SingleAxis3DataUsingTracker.txt");%在这里修改文件名称
+    j_limited = -20:4:20;
+    end
+    if (w==4)
+    input0=load("data/20220808/SingleAxis4DataUsingTracker.txt");%在这里修改文件名称
+    j_limited = -10:2:10;
+    end
+
+    
+
+input0(1,:) = [];
+a=sortrows(input0);
+
+% tabulate(a(:,1))
+% times=30;%点重复次数
+n=1;
+temp=[];
+count = 0;
+err_xyz = [];
+a_temp = [];
+for i=j_limited
+    count_pre = count+1;
+    count = count_pre+sum(a(:,1)==i)-1;
+    a_temp = a(count_pre:count,:);
+    
+
+
+
+
+    n = n+1;
+end
+
+
+
+
+
+
+
+
+
+
+    count_comp = count*(count-1)/2;
+    for i = 1:count-1
+        for j = i+1:count
+            
+            err_points(n,:) = norm(1000*(a(i,6:8)-a(j,6:8)));
+ 
+            n=n+1;
+        end
+    end
+    err_points_max = max(err_points)
+end
+
+
+w = [1 2 3 4];
+result = cat(1,w,err_point_max.');
+fprintf("the repeat error of the %d Axis is %4.4f \n",result);
