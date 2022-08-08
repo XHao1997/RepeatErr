@@ -28,12 +28,9 @@ while(w <= 4)
     
 
 input0(1,:) = [];
-a=sortrows(input0);
+a=sortrows(input0);%重新排列
 
-% tabulate(a(:,1))
-% times=30;%点重复次数
 n=1;
-temp=[];
 count = 0;
 err_xyz = [];
 err_points = [];
@@ -42,16 +39,19 @@ for i=j_limited
     count_pre = count+1;
     count = count_pre+sum(a(:,1)==i)-1;
     a_temp = a(count_pre:count,:);
-    for j=1:size(a_temp,1)
-        for k=j+1:size(a_temp,1)
-            err_xyz(n,:)=a_temp(j,6:8)-a_temp(k,6:8);
-            err_points(n,:) = 1000*norm(err_xyz(n,:));
+    uppper_limit = size(a_temp,1);
+    % 排列组合做差
+    for j=1:uppper_limit
+        for k=j+1:uppper_limit
+            err_xyz(n,:)=a_temp(j,6:8)-a_temp(k,6:8);%坐标差
+            err_points(n,:) = 1000*norm(err_xyz(n,:));%欧氏距离
             n = n+1;
         end
     end
     
 end
-max(err_points)
+
+max(err_points)%当前w轴下最大误差
 
 w=w+1;
 end
